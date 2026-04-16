@@ -28,13 +28,15 @@ export default function Page() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-100 flex flex-col items-center px-6 text-center">
+    <div className="min-h-screen bg-gradient-to-b from-white via-blue-50 to-white flex flex-col items-center px-6 text-center">
 
       {/* HERO */}
-      <div className="max-w-3xl mt-20">
-        <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+      <div className="max-w-3xl mt-16">
+        <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
           Automate Your Export Business with{" "}
-          <span className="text-blue-600">ExportFlow AI</span>
+          <span className="bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent">
+            ExportFlow AI
+          </span>
         </h1>
 
         <p className="text-gray-600 text-lg mb-8">
@@ -43,17 +45,20 @@ export default function Page() {
         </p>
 
         {/* CTA */}
-        <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-4 justify-center">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col md:flex-row items-center gap-3 justify-center"
+        >
           <input
             type="email"
             placeholder="Join the waitlist"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="px-5 py-3 rounded-xl border w-full md:w-80 shadow-sm"
+            className="px-5 py-3 rounded-xl border w-full md:w-80 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
           />
 
-          <button className="px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition">
+          <button className="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-500 text-white font-semibold shadow-lg hover:scale-105 transition">
             Request Access
           </button>
         </form>
@@ -62,23 +67,23 @@ export default function Page() {
       </div>
 
       {/* FEATURES */}
-      <div className="grid md:grid-cols-3 gap-8 mt-20 max-w-5xl w-full">
+      <div className="grid md:grid-cols-3 gap-8 mt-16 max-w-5xl w-full">
 
-        <div className="p-6 rounded-2xl bg-white shadow-lg hover:shadow-xl transition">
+        <div className="p-6 rounded-2xl bg-white/70 backdrop-blur shadow-xl hover:scale-105 transition">
           <h3 className="text-xl font-semibold mb-2">📄 Document Automation</h3>
           <p className="text-gray-600">
             Generate invoices, packing lists, and export documents instantly.
           </p>
         </div>
 
-        <div className="p-6 rounded-2xl bg-white shadow-lg hover:shadow-xl transition">
+        <div className="p-6 rounded-2xl bg-white/70 backdrop-blur shadow-xl hover:scale-105 transition">
           <h3 className="text-xl font-semibold mb-2">🤖 Supplier AI</h3>
           <p className="text-gray-600">
             Automate emails, follow-ups, and negotiations globally.
           </p>
         </div>
 
-        <div className="p-6 rounded-2xl bg-white shadow-lg hover:shadow-xl transition">
+        <div className="p-6 rounded-2xl bg-white/70 backdrop-blur shadow-xl hover:scale-105 transition">
           <h3 className="text-xl font-semibold mb-2">📊 Smart Dashboard</h3>
           <p className="text-gray-600">
             Track shipments, orders, and operations with AI insights.
