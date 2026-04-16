@@ -159,7 +159,10 @@ export default function Page() {
       >
         💬 Chat on WhatsApp
       </a>
-
+      <a 
+        href="/login" className="absolute top-6 right-6 text-blue-600">
+      Login
+      </a>
     </div>
   );
 }
