@@ -44,7 +44,7 @@ export default function Page() {
           and global operations — so you can scale faster.
         </p>
 
-        {/* CTA */}
+        {/* FORM */}
         <form
           onSubmit={handleSubmit}
           className="flex flex-col md:flex-row items-center gap-3 justify-center"
@@ -96,6 +96,16 @@ export default function Page() {
       <p className="text-sm text-gray-400 mt-20 mb-10">
         Built for exporters, traders, and global suppliers.
       </p>
+
+      {/* ✅ WHATSAPP BUTTON */}
+      <a
+        href="https://wa.me/918129606474?text=Hi%20I%20am%20interested%20in%20ExportFlow%20AI"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 bg-green-500 hover:bg-green-600 text-white px-5 py-3 rounded-full shadow-lg flex items-center gap-2"
+      >
+        💬 WhatsApp
+      </a>
 
     </div>
   );
