@@ -2,15 +2,39 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import { createClient } from "@supabase/supabase-js";
+
+// 🔑 Supabase connection
+const supabase = createClient(
+  "https://ssctpvqpszglytteytjp.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzY3RwdnFwc3pnbHl0dGV5dGpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyMzc0NTIsImV4cCI6MjA5MTgxMzQ1Mn0.2a_QpNDw7vPrYe1OkFje3SdwF3gaEWCEn7iqca54sZQ"
+);
 
 export default function LandingPage() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!email) return;
-    setSubmitted(true);
+
+    setLoading(true);
+
+    const { error } = await supabase
+      .from("waitlist")
+      .insert([{ email }]);
+
+    setLoading(false);
+
+    if (!error) {
+      setSubmitted(true);
+      setEmail("");
+    } else {
+      alert("Failed to save email. Check Supabase setup.");
+      console.log(error);
+    }
   };
 
   return (
@@ -63,7 +87,17 @@ export default function LandingPage() {
 
         {!submitted ? (
           <form
-            onSubmit={handleSubmit}
+            onSubmit={const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (!email) return;
+
+  const { data, error } = await supabase
+    .from("waitlist")
+    .insert([{ email }])
+    .select();
+
+  alert(JSON.stringify({ data, error }));
             className="flex flex-col md:flex-row gap-4 justify-center"
           >
             <input
@@ -74,16 +108,18 @@ export default function LandingPage() {
               className="px-4 py-3 rounded-xl border w-full md:w-80"
               required
             />
+
             <button
               type="submit"
+              disabled={loading}
               className="px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold"
             >
-              Request Early Access
+              {loading ? "Saving..." : "Request Early Access"}
             </button>
           </form>
         ) : (
           <p className="text-green-600 font-semibold">
-            You're on the list! We'll be in touch soon.
+            You're on the list! We'll be in touch soon 🚀
           </p>
         )}
 
