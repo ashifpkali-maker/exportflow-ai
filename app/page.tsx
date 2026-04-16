@@ -29,21 +29,55 @@ export default function Page() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center">
-      
+
+      {/* HERO */}
       <h1 className="text-5xl font-bold mb-6">
         Scale Your Export Business with{" "}
         <span className="text-blue-600">ExportFlow AI</span>
       </h1>
 
-      <p className="text-gray-600 mb-8 max-w-xl">
+      <p className="text-gray-600 mb-10 max-w-xl">
         We build AI systems for export businesses to automate documentation,
         streamline supplier communication, and manage global operations.
       </p>
 
+      {/* 🔥 3 FEATURE CARDS */}
+      <div className="grid md:grid-cols-3 gap-6 mb-10 max-w-4xl">
+        
+        <div className="p-6 rounded-2xl shadow hover:shadow-lg transition">
+          <h3 className="font-semibold text-xl mb-2">
+            Document Automation
+          </h3>
+          <p className="text-sm text-gray-600">
+            Instantly generate invoices, packing lists, and compliance docs.
+          </p>
+        </div>
+
+        <div className="p-6 rounded-2xl shadow hover:shadow-lg transition">
+          <h3 className="font-semibold text-xl mb-2">
+            Supplier & Buyer AI
+          </h3>
+          <p className="text-sm text-gray-600">
+            Automate emails, follow-ups, and negotiations across borders.
+          </p>
+        </div>
+
+        <div className="p-6 rounded-2xl shadow hover:shadow-lg transition">
+          <h3 className="font-semibold text-xl mb-2">
+            Operations Dashboard
+          </h3>
+          <p className="text-sm text-gray-600">
+            Track shipments, orders, and workflows with AI-powered insights.
+          </p>
+        </div>
+
+      </div>
+
+      {/* FORM */}
       <form onSubmit={handleSubmit} className="flex gap-4">
         <input
           type="email"
-          placeholder="Enter your email"
+          placeholder="Join the waitlist (exporters only)"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className="border px-4 py-3 rounded w-72"
@@ -51,11 +85,15 @@ export default function Page() {
         />
 
         <button className="bg-blue-600 text-white px-6 py-3 rounded">
-          Join Waitlist
+          Request Early Access
         </button>
       </form>
 
       {message && <p className="mt-4">{message}</p>}
+
+      <p className="text-xs text-gray-400 mt-6">
+        Built for exporters, traders, and global suppliers.
+      </p>
 
     </div>
   );
