@@ -20,9 +20,20 @@ export default function Dashboard() {
       setUser(savedUser);
 
       // 🔥 SAVE TO DATABASE
-      supabase.from("waitlist").insert([
-        { email: savedUser }
-      ]);
+      const saveUser = async () => {
+  const { data } = await supabase
+    .from("waitlist")
+    .select("email")
+    .eq("email", savedUser);
+
+  if (!data || data.length === 0) {
+    await supabase.from("waitlist").insert([
+      { email: savedUser }
+    ]);
+  }
+};
+
+saveUser();
     }
   }, []);
 
