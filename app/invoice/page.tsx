@@ -11,17 +11,13 @@ const generateWithAI = async () => {
 
   const data = await res.json();
 
-  try {
-    const parsed = JSON.parse(
-      data.choices[0].message.content
-    );
-
-    setBuyer(parsed.buyer || "");
-    setProduct(parsed.product || "");
-    setAmount(parsed.amount || "");
-
-  } catch (err) {
-    console.log("RAW:", data);
-    alert("AI parsing failed");
+  if (data.error) {
+    alert("AI failed");
+    return;
   }
+
+  // ✅ NOW DIRECT DATA (no parsing needed)
+  setBuyer(data.buyer || "");
+  setProduct(data.product || "");
+  setAmount(data.amount || "");
 };
