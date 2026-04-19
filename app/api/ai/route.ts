@@ -36,3 +36,39 @@ export async function POST(req: Request) {
     );
   }
 }
+const generateWithAI = async () => {
+  if (!aiInput) return;
+
+  const res = await fetch("/api/ai", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      input: aiInput,
+    }),
+  });
+
+  const data = await res.json();
+
+  try {
+    const text = data.choices[0].message.content;
+    const parsed = JSON.parse(text);
+
+    setBuyer(parsed.buyer || "");
+    setProduct(parsed.product || "");
+    setAmount(parsed.amount || "");
+  } catch (err) {
+    alert("AI failed to parse");
+  }
+};content: `
+Extract the following fields from user input:
+- buyer (company name)
+- product (include quantity if mentioned)
+- amount (number only)
+
+Return ONLY valid JSON like:
+{"buyer":"...", "product":"...", "amount":"..."}
+
+No explanation.
+`,

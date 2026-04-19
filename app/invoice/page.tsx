@@ -24,3 +24,17 @@ const generateWithAI = async () => {
     alert("AI parsing failed");
   }
 };
+const [aiInput, setAiInput] = useState("");
+<input
+  placeholder="Type: Export rice to Dubai for 5000 USD to ABC Traders"
+  className="border p-3 w-full mb-3 rounded"
+  value={aiInput}
+  onChange={(e) => setAiInput(e.target.value)}
+/>
+
+<button
+  onClick={generateWithAI}
+  className="bg-blue-600 text-white px-4 py-2 rounded w-full mb-4"
+>
+  Generate with AI
+</button>
