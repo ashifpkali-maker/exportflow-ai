@@ -12,27 +12,12 @@ export async function POST(req: Request) {
       },
       body: JSON.stringify({
         model: "gpt-4o-mini",
+        response_format: { type: "json_object" }, // ✅ FORCE JSON
         messages: [
           {
             role: "system",
-            content: `
-You are an AI that extracts structured invoice data.
-
-From the input, extract:
-- buyer (company name only)
-- product (include quantity if mentioned)
-- amount (number only, no currency)
-
-Rules:
-- Buyer is usually after "to"
-- Product is the exported item
-- Amount is the price
-
-Return ONLY valid JSON:
-{"buyer":"...", "product":"...", "amount":"..."}
-
-No explanation, only JSON.
-            `,
+            content:
+              "Extract buyer, product, and amount from text. Return JSON with keys: buyer, product, amount.",
           },
           {
             role: "user",
@@ -48,7 +33,7 @@ No explanation, only JSON.
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { error: "AI processing failed" },
+      { error: "AI failed" },
       { status: 500 }
     );
   }
