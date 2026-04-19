@@ -11,7 +11,8 @@ const generateWithAI = async () => {
 
   const data = await res.json();
 
-  setBuyer(data.buyer);
-  setProduct(data.product);
-  setAmount(data.amount);
+  // ✅ DIRECT USE (NO PARSE)
+  setBuyer(data.buyer || "");
+  setProduct(data.product || "");
+  setAmount(data.amount || "");
 };
