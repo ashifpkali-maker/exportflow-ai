@@ -11,8 +11,6 @@ const generateWithAI = async () => {
 
   const data = await res.json();
 
-  console.log("AI DATA:", data);
-
   setBuyer(data.buyer || "");
   setProduct(data.product || "");
   setAmount(data.amount || "");

@@ -4,54 +4,35 @@ export async function POST(req: Request) {
   try {
     const { input } = await req.json();
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        temperature: 0,
-        messages: [
-          {
-            role: "system",
-            content:
-              "Extract buyer, product, and amount. Return ONLY JSON like {\"buyer\":\"...\",\"product\":\"...\",\"amount\":\"...\"}. No explanation.",
-          },
-          {
-            role: "user",
-            content: input,
-          },
-        ],
-      }),
-    });
+    let buyer = "";
+    let product = "";
+    let amount = "";
 
-    const data = await response.json();
-
-    let content = data.choices?.[0]?.message?.content || "";
-
-    // CLEAN RESPONSE
-    content = content.replace(/```json|```/g, "").trim();
-
-    let parsed;
-
-    try {
-      parsed = JSON.parse(content);
-    } catch {
-      parsed = { buyer: "", product: input, amount: "" };
+    // 🔹 Extract Buyer (after "to")
+    const buyerMatch = input.match(/to\s(.+)$/i);
+    if (buyerMatch) {
+      buyer = buyerMatch[1].trim();
     }
 
-    // ✅ RETURN CLEAN OBJECT ONLY
+    // 🔹 Extract Product (between "export" and "to")
+    const productMatch = input.match(/export\s(.+?)\sto/i);
+    if (productMatch) {
+      product = productMatch[1].trim();
+    }
+
+    // 🔹 Extract Amount (biggest number in string)
+    const numbers = input.match(/\d+/g);
+    if (numbers) {
+      amount = numbers[numbers.length - 1]; // last number (usually price)
+    }
+
     return NextResponse.json({
-      buyer: parsed.buyer || "",
-      product: parsed.product || "",
-      amount: parsed.amount || "",
+      buyer,
+      product,
+      amount,
     });
 
   } catch (error) {
-    console.error(error);
-
     return NextResponse.json({
       buyer: "",
       product: "",
