@@ -4,7 +4,7 @@ export async function POST(req: Request) {
   try {
     const { input } = await req.json();
 
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -15,8 +15,24 @@ export async function POST(req: Request) {
         messages: [
           {
             role: "system",
-            content:
-              "Extract buyer, product, and amount from text and return ONLY JSON like {buyer, product, amount}",
+            content: `
+You are an AI that extracts structured invoice data.
+
+From the input, extract:
+- buyer (company name only)
+- product (include quantity if mentioned)
+- amount (number only, no currency)
+
+Rules:
+- Buyer is usually after "to"
+- Product is the exported item
+- Amount is the price
+
+Return ONLY valid JSON:
+{"buyer":"...", "product":"...", "amount":"..."}
+
+No explanation, only JSON.
+            `,
           },
           {
             role: "user",
@@ -26,49 +42,14 @@ export async function POST(req: Request) {
       }),
     });
 
-    const data = await res.json();
+    const data = await response.json();
 
     return NextResponse.json(data);
-  } catch (err) {
+  } catch (error) {
+    console.error(error);
     return NextResponse.json(
-      { error: "AI failed" },
+      { error: "AI processing failed" },
       { status: 500 }
     );
   }
 }
-const generateWithAI = async () => {
-  if (!aiInput) return;
-
-  const res = await fetch("/api/ai", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      input: aiInput,
-    }),
-  });
-
-  const data = await res.json();
-
-  try {
-    const text = data.choices[0].message.content;
-    const parsed = JSON.parse(text);
-
-    setBuyer(parsed.buyer || "");
-    setProduct(parsed.product || "");
-    setAmount(parsed.amount || "");
-  } catch (err) {
-    alert("AI failed to parse");
-  }
-};content: `
-Extract the following fields from user input:
-- buyer (company name)
-- product (include quantity if mentioned)
-- amount (number only)
-
-Return ONLY valid JSON like:
-{"buyer":"...", "product":"...", "amount":"..."}
-
-No explanation.
-`,
