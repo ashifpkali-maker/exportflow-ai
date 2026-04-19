@@ -11,12 +11,6 @@ const generateWithAI = async () => {
 
   const data = await res.json();
 
-  if (data.error) {
-    alert("AI failed");
-    return;
-  }
-
-  // ✅ NOW DIRECT DATA (no parsing needed)
   setBuyer(data.buyer || "");
   setProduct(data.product || "");
   setAmount(data.amount || "");

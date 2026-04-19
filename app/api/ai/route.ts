@@ -12,12 +12,12 @@ export async function POST(req: Request) {
       },
       body: JSON.stringify({
         model: "gpt-4o-mini",
-        response_format: { type: "json_object" },
+        temperature: 0,
         messages: [
           {
             role: "system",
             content:
-              "Extract buyer, product, and amount from the sentence and return JSON with keys buyer, product, amount.",
+              "Extract buyer, product, and amount. Return ONLY JSON like {\"buyer\":\"...\",\"product\":\"...\",\"amount\":\"...\"}. No text.",
           },
           {
             role: "user",
@@ -29,14 +29,20 @@ export async function POST(req: Request) {
 
     const data = await response.json();
 
-    // 👉 IMPORTANT: directly return parsed JSON
-    const content = data.choices[0].message.content;
+    let content = data.choices?.[0]?.message?.content || "";
+
+    // 🔥 CLEAN RESPONSE (important fix)
+    content = content.replace(/```json|```/g, "").trim();
+
     const parsed = JSON.parse(content);
 
     return NextResponse.json(parsed);
 
   } catch (error) {
     console.error("AI ERROR:", error);
-    return NextResponse.json({ error: "AI failed" }, { status: 500 });
+    return NextResponse.json(
+      { buyer: "", product: "", amount: "" },
+      { status: 200 }
+    );
   }
 }
