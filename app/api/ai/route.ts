@@ -17,7 +17,7 @@ export async function POST(req: Request) {
           {
             role: "system",
             content:
-              "Extract buyer, product, and amount. Return ONLY JSON like {\"buyer\":\"...\",\"product\":\"...\",\"amount\":\"...\"}. No text.",
+              "Extract buyer, product, and amount. Return ONLY JSON like {\"buyer\":\"...\",\"product\":\"...\",\"amount\":\"...\"}. No explanation.",
           },
           {
             role: "user",
@@ -29,20 +29,35 @@ export async function POST(req: Request) {
 
     const data = await response.json();
 
-    let content = data.choices?.[0]?.message?.content || "";
+    let content = data?.choices?.[0]?.message?.content || "";
 
-    // 🔥 CLEAN RESPONSE (important fix)
-    content = content.replace(/```json|```/g, "").trim();
+    // 🔥 CLEAN ANY BAD FORMATTING
+    content = content
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim();
 
-    const parsed = JSON.parse(content);
+    let parsed;
+
+    try {
+      parsed = JSON.parse(content);
+    } catch {
+      // 🔥 FALLBACK (no crash)
+      parsed = {
+        buyer: "",
+        product: input,
+        amount: "",
+      };
+    }
 
     return NextResponse.json(parsed);
-
   } catch (error) {
-    console.error("AI ERROR:", error);
-    return NextResponse.json(
-      { buyer: "", product: "", amount: "" },
-      { status: 200 }
-    );
+    console.error(error);
+
+    return NextResponse.json({
+      buyer: "",
+      product: "",
+      amount: "",
+    });
   }
 }
