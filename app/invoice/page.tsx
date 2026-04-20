@@ -86,28 +86,37 @@ export default function InvoicePage() {
       <html>
       <head>
         <meta charset="utf-8">
-        <title>Invoice</title>
+        <title>${invoiceNumber}</title>
         <style>
-          body { font-family: Arial, sans-serif; padding: 40px; color: #000; background: #fff; }
+          body { font-family: Arial, sans-serif; padding: 60px; color: #000; background: #fff; max-width: 700px; margin: auto; }
           .header { display: flex; justify-content: space-between; margin-bottom: 40px; }
-          .company { font-size: 22px; font-weight: bold; }
+          .company { font-size: 24px; font-weight: bold; }
           .subtitle { font-size: 13px; color: #666; margin-top: 4px; }
-          .invoice-label { font-size: 20px; font-weight: bold; text-align: right; }
+          .invoice-label { font-size: 22px; font-weight: bold; text-align: right; }
           .meta { font-size: 13px; color: #666; text-align: right; margin-top: 4px; }
-          .bill-to { margin-bottom: 30px; }
-          .bill-to .label { font-size: 12px; color: #999; margin-bottom: 4px; }
-          .bill-to .name { font-size: 16px; font-weight: bold; }
+          .bill-section { margin-bottom: 30px; }
+          .bill-label { font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+          .bill-name { font-size: 18px; font-weight: bold; }
           table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-          th { background: #f5f5f5; padding: 10px 12px; text-align: left; font-size: 13px; color: #666; border-bottom: 2px solid #eee; }
-          td { padding: 12px; border-bottom: 1px solid #eee; font-size: 14px; }
-          .total-row { text-align: right; margin-top: 20px; font-size: 18px; font-weight: bold; }
-          .footer { margin-top: 60px; text-align: center; font-size: 12px; color: #aaa; }
-          .signature { margin-top: 60px; text-align: right; }
-          .signature .line { border-top: 1px solid #000; width: 200px; margin-left: auto; margin-bottom: 6px; }
-          .signature .name { font-size: 13px; font-weight: bold; }
+          th { background: #f5f5f5; padding: 12px; text-align: left; font-size: 13px; color: #555; border-bottom: 2px solid #e0e0e0; }
+          td { padding: 14px 12px; border-bottom: 1px solid #eee; font-size: 14px; }
+          .total-section { text-align: right; margin-top: 30px; padding-top: 16px; border-top: 2px solid #000; }
+          .total-label { font-size: 13px; color: #666; }
+          .total-amount { font-size: 24px; font-weight: bold; margin-top: 4px; }
+          .signature { margin-top: 80px; text-align: right; }
+          .sig-line { border-top: 1px solid #000; width: 200px; margin-left: auto; margin-bottom: 8px; }
+          .sig-name { font-size: 14px; font-weight: bold; }
+          .sig-sub { font-size: 12px; color: #999; }
+          .footer { margin-top: 60px; text-align: center; font-size: 12px; color: #bbb; border-top: 1px solid #eee; padding-top: 20px; }
+          .print-hint { background: #f0f7ff; border: 1px solid #cce0ff; padding: 12px 20px; border-radius: 8px; margin-bottom: 30px; font-size: 13px; color: #1a5fa8; }
+          @media print { .print-hint { display: none; } }
         </style>
       </head>
       <body>
+        <div class="print-hint">
+          To save as PDF: press <strong>Ctrl + P</strong> (Windows) or <strong>Cmd + P</strong> (Mac) then choose <strong>Save as PDF</strong>
+        </div>
+
         <div class="header">
           <div>
             <div class="company">ExportFlow AI</div>
@@ -115,14 +124,14 @@ export default function InvoicePage() {
           </div>
           <div>
             <div class="invoice-label">INVOICE</div>
-            <div class="meta">Date: ${date}</div>
             <div class="meta">${invoiceNumber}</div>
+            <div class="meta">Date: ${date}</div>
           </div>
         </div>
 
-        <div class="bill-to">
-          <div class="label">BILL TO</div>
-          <div class="name">${buyer}</div>
+        <div class="bill-section">
+          <div class="bill-label">Bill To</div>
+          <div class="bill-name">${buyer}</div>
         </div>
 
         <table>
@@ -140,26 +149,31 @@ export default function InvoicePage() {
           </tbody>
         </table>
 
-        <div class="total-row">Total: ₹${amount}</div>
-
-        <div class="signature">
-          <div class="line"></div>
-          <div class="name">ExportFlow AI</div>
-          <div style="font-size:12px;color:#999">Authorized Signature</div>
+        <div class="total-section">
+          <div class="total-label">Total Amount</div>
+          <div class="total-amount">₹${amount}</div>
         </div>
 
-        <div class="footer">Thank you for your business!</div>
+        <div class="signature">
+          <div class="sig-line"></div>
+          <div class="sig-name">ExportFlow AI</div>
+          <div class="sig-sub">Authorized Signature</div>
+        </div>
+
+        <div class="footer">
+          Thank you for your business! &nbsp;|&nbsp; ExportFlow AI &nbsp;|&nbsp; Global Export Solutions
+        </div>
       </body>
       </html>
     `;
 
-    const blob = new Blob([html], { type: "text/html" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${invoiceNumber}.html`;
-    a.click();
-    URL.revokeObjectURL(url);
+    const newTab = window.open("", "_blank");
+    if (newTab) {
+      newTab.document.write(html);
+      newTab.document.close();
+    } else {
+      alert("Please allow popups for this site to view the invoice.");
+    }
   };
 
   const deleteInvoice = async (id: number) => {
@@ -196,6 +210,7 @@ export default function InvoicePage() {
 
         {tab === "create" && (
           <div className="grid md:grid-cols-2 gap-6">
+
             <div className="bg-white p-8 rounded-2xl shadow">
               <h1 className="text-2xl font-bold mb-6">Create Invoice</h1>
 
@@ -250,7 +265,10 @@ export default function InvoicePage() {
             </div>
 
             <div className="bg-white p-8 rounded-2xl shadow">
-              <div className="p-6 border rounded-xl" style={{ background: "#fff", color: "#000" }}>
+              <div
+                className="p-6 border rounded-xl"
+                style={{ background: "#fff", color: "#000" }}
+              >
                 <div className="flex justify-between mb-6">
                   <div>
                     <h2 className="text-xl font-bold">ExportFlow AI</h2>
@@ -258,7 +276,9 @@ export default function InvoicePage() {
                   </div>
                   <div className="text-right">
                     <p className="font-semibold">INVOICE</p>
-                    <p className="text-sm text-gray-500">{new Date().toLocaleDateString()}</p>
+                    <p className="text-sm text-gray-500">
+                      {new Date().toLocaleDateString()}
+                    </p>
                   </div>
                 </div>
 
@@ -292,11 +312,12 @@ export default function InvoicePage() {
 
               <button
                 onClick={downloadPDF}
-                className="mt-4 w-full bg-green-600 text-white py-3 rounded-xl font-semibold"
+                className="mt-4 w-full bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700"
               >
-                Download Invoice
+                View & Download Invoice
               </button>
             </div>
+
           </div>
         )}
 
@@ -340,6 +361,7 @@ export default function InvoicePage() {
             )}
           </div>
         )}
+
       </div>
     </div>
   );
