@@ -1,14 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
   "https://ssctpvqpszglytteytjp.supabase.co",
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzY3RwdnFwc3pnbHl0dGV5dGpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyMzc0NTIsImV4cCI6MjA5MTgxMzQ1Mn0.2a_QpNDw7vPrYe1OkFje3SdwF3gaEWCEn7iqca54sZQ"
 );
+
 type Invoice = {
   id: number;
   buyer: string;
@@ -78,19 +77,89 @@ export default function InvoicePage() {
     }
   };
 
-  const downloadPDF = async () => {
-    const element = document.getElementById("invoice-preview");
-    if (!element) return;
-    element.style.background = "#ffffff";
-    element.style.color = "#000000";
-    const canvas = await html2canvas(element, {
-      backgroundColor: "#ffffff",
-      useCORS: true,
-    });
-    const imgData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF();
-    pdf.addImage(imgData, "PNG", 10, 10, 180, 0);
-    pdf.save("invoice.pdf");
+  const downloadPDF = () => {
+    const invoiceNumber = "INV-" + Date.now().toString().slice(-5);
+    const date = new Date().toLocaleDateString();
+
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <title>Invoice</title>
+        <style>
+          body { font-family: Arial, sans-serif; padding: 40px; color: #000; background: #fff; }
+          .header { display: flex; justify-content: space-between; margin-bottom: 40px; }
+          .company { font-size: 22px; font-weight: bold; }
+          .subtitle { font-size: 13px; color: #666; margin-top: 4px; }
+          .invoice-label { font-size: 20px; font-weight: bold; text-align: right; }
+          .meta { font-size: 13px; color: #666; text-align: right; margin-top: 4px; }
+          .bill-to { margin-bottom: 30px; }
+          .bill-to .label { font-size: 12px; color: #999; margin-bottom: 4px; }
+          .bill-to .name { font-size: 16px; font-weight: bold; }
+          table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+          th { background: #f5f5f5; padding: 10px 12px; text-align: left; font-size: 13px; color: #666; border-bottom: 2px solid #eee; }
+          td { padding: 12px; border-bottom: 1px solid #eee; font-size: 14px; }
+          .total-row { text-align: right; margin-top: 20px; font-size: 18px; font-weight: bold; }
+          .footer { margin-top: 60px; text-align: center; font-size: 12px; color: #aaa; }
+          .signature { margin-top: 60px; text-align: right; }
+          .signature .line { border-top: 1px solid #000; width: 200px; margin-left: auto; margin-bottom: 6px; }
+          .signature .name { font-size: 13px; font-weight: bold; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div>
+            <div class="company">ExportFlow AI</div>
+            <div class="subtitle">Global Export Solutions</div>
+          </div>
+          <div>
+            <div class="invoice-label">INVOICE</div>
+            <div class="meta">Date: ${date}</div>
+            <div class="meta">${invoiceNumber}</div>
+          </div>
+        </div>
+
+        <div class="bill-to">
+          <div class="label">BILL TO</div>
+          <div class="name">${buyer}</div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Product / Description</th>
+              <th style="text-align:right">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>${product}</td>
+              <td style="text-align:right">₹${amount}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="total-row">Total: ₹${amount}</div>
+
+        <div class="signature">
+          <div class="line"></div>
+          <div class="name">ExportFlow AI</div>
+          <div style="font-size:12px;color:#999">Authorized Signature</div>
+        </div>
+
+        <div class="footer">Thank you for your business!</div>
+      </body>
+      </html>
+    `;
+
+    const blob = new Blob([html], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${invoiceNumber}.html`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   const deleteInvoice = async (id: number) => {
@@ -181,11 +250,7 @@ export default function InvoicePage() {
             </div>
 
             <div className="bg-white p-8 rounded-2xl shadow">
-              <div
-                id="invoice-preview"
-                style={{ background: "#fff", color: "#000" }}
-                className="p-6 border rounded-xl"
-              >
+              <div className="p-6 border rounded-xl" style={{ background: "#fff", color: "#000" }}>
                 <div className="flex justify-between mb-6">
                   <div>
                     <h2 className="text-xl font-bold">ExportFlow AI</h2>
@@ -193,12 +258,7 @@ export default function InvoicePage() {
                   </div>
                   <div className="text-right">
                     <p className="font-semibold">INVOICE</p>
-                    <p className="text-sm text-gray-500">
-                      {new Date().toLocaleDateString()}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      INV-{Date.now().toString().slice(-5)}
-                    </p>
+                    <p className="text-sm text-gray-500">{new Date().toLocaleDateString()}</p>
                   </div>
                 </div>
 
@@ -234,7 +294,7 @@ export default function InvoicePage() {
                 onClick={downloadPDF}
                 className="mt-4 w-full bg-green-600 text-white py-3 rounded-xl font-semibold"
               >
-                Download PDF
+                Download Invoice
               </button>
             </div>
           </div>
@@ -243,7 +303,6 @@ export default function InvoicePage() {
         {tab === "history" && (
           <div className="bg-white p-8 rounded-2xl shadow">
             <h2 className="text-2xl font-bold mb-6">Invoice History</h2>
-
             {invoices.length === 0 ? (
               <p className="text-gray-500">No invoices saved yet.</p>
             ) : (
